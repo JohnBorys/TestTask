@@ -7,9 +7,10 @@
 //
 
 import UIKit
+import SafariServices
 
 
-class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, SFSafariViewControllerDelegate {
     var localNews: [NewsModel] = []
     
     @IBOutlet weak var tableView: UITableView!
@@ -53,10 +54,21 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         return cell
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    func showWebsite(url: String) {
+        let URL = NSURL(string: url)!
+        let webVC = SFSafariViewController(url: URL as URL)
+        webVC.delegate = self
+        self.present(webVC, animated: true, completion: nil)
     }
+   
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let currentNew = localNews[indexPath.row]
+        let url = currentNew.url
+        self.showWebsite(url: url)
+    }
+    
+    
 }
 
 extension UIImageView {

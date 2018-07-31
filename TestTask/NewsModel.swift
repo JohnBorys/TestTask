@@ -16,5 +16,6 @@ class NewsModel {
     var imageURLString: String = "https://increasify.com.au/wp-content/uploads/2016/08/default-image.png"
     var description = "No discription"
     var image: UIImage = UIImage()
+    var url: String = "https://edition.cnn.com/2018/07/30/europe/france-paris-harassment-video-intl/index.html"
 }
 

@@ -62,8 +62,11 @@ class NetworkDataManager {
                     if let source = newsDictionary["source"] as? String {
                         newsModel.source = source
                     }
-                    if let image = (newsDictionary["urlToImage"] as? String) {
+                    if let image = newsDictionary["urlToImage"] as? String {
                         newsModel.imageURLString = image
+                    }
+                    if let url = newsDictionary["url"] as? String {
+                        newsModel.url = url
                     }
                     
                     
