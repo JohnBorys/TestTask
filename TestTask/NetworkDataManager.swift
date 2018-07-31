@@ -17,7 +17,7 @@ class NetworkDataManager {
         // 1 URL
         var stringURL = "https://newsapi.org/v2/top-headlines"
         //        stringURL = stringURL + "?" + country + "&" + "apiKey=\(apaKey)"
-        stringURL = "https://newsapi.org/v2/top-headlines?" + "country=us&" + "apiKey=e6b65ba5499f4b1f8817d582038435a6"
+        stringURL = "https://newsapi.org/v2/everything?q=bitcoin&" + "sortBy=popularity&" + "apiKey=e6b65ba5499f4b1f8817d582038435a6"
         guard let url = URL(string: stringURL) else {
             return
         }
@@ -47,9 +47,7 @@ class NetworkDataManager {
                 var recipesModelsArray: [NewsModel] = []
                 for newsDictionary in reseepsDictionariesArray {
                     let newsModel = NewsModel()
-//                    if let idString = newsDictionary["id"] as? String, let id = Int(idString) {
-//                        newsModel.id = id
-//                    }
+
                     if let title = newsDictionary["title"] as? String {
                         newsModel.title = title
                     }
@@ -59,8 +57,8 @@ class NetworkDataManager {
                     if let author = newsDictionary["author"] as? String {
                         newsModel.author = author
                     }
-                    if let source = newsDictionary["source"] as? String {
-                        newsModel.source = source
+                    if let name = newsDictionary["name"] as? String {
+                        newsModel.name = name
                     }
                     if let image = newsDictionary["urlToImage"] as? String {
                         newsModel.imageURLString = image

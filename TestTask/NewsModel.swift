@@ -12,10 +12,10 @@ class NewsModel {
     var id: Int = -1
     var title: String = "No titles"
     var author: String = "No author"
-    var source: String = "No source"
+    var name: String = "No name"
     var imageURLString: String = "https://increasify.com.au/wp-content/uploads/2016/08/default-image.png"
     var description = "No discription"
-    var image: UIImage = UIImage()
-    var url: String = "https://edition.cnn.com/2018/07/30/europe/france-paris-harassment-video-intl/index.html"
+    var image: UIImage = #imageLiteral(resourceName: "defaultImage")
+    var url: String = "https://www.apple.com"
 }
 

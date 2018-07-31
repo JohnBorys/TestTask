@@ -13,21 +13,46 @@ import SafariServices
 class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, SFSafariViewControllerDelegate {
     var localNews: [NewsModel] = []
     
+    lazy var refresher: UIRefreshControl = {
+        let refreshController = UIRefreshControl()
+        refreshController.tintColor = UIColor(red: 1.00, green: 0.21, blue: 0.55, alpha: 1.00)
+        refreshController.attributedTitle = NSAttributedString(string: "Pull to refresh")
+        refreshController.addTarget(self, action: #selector(requestData), for: .valueChanged)
+        return refreshController
+    }()
+    
     @IBOutlet weak var tableView: UITableView!
 
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if #available(iOS 10.0, *) {
+            tableView.refreshControl = refresher
+        } else {
+            tableView.addSubview(refresher)
+        }
+        
         let cellNib = UINib(nibName: "\(NewsTableViewCell.self)", bundle: nil)
         tableView.register(cellNib, forCellReuseIdentifier: "\(NewsTableViewCell.self)")
-        
+        requestData()
+    }
+    
+    @objc func requestData() {
         NetworkDataManager.sharedNetworkDataManager.getAllNews(complition: {news in
             DispatchQueue.main.async {
-                self.localNews = news
+//                self.localNews = news
+                self.localNews.append(contentsOf: news)
                 self.tableView.reloadData()
+                
             }
-            print("Hooray I recive news in view controller \(news.count)")
+             print("Hooray I recive news in view controller \(news.count)")
         })
+        
+        let deadline = DispatchTime.now() + .milliseconds(800)
+        DispatchQueue.main.asyncAfter(deadline: deadline) {
+            self.refresher.endRefreshing()
+        }
     }
     
     
@@ -48,7 +73,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         cell.titleLabel.text = currentCell.title
         cell.descripton.text = currentCell.description
         cell.authorLabel.text = currentCell.author
-        cell.sourceOrtlet.text = currentCell.source
+        cell.sourceOrtlet.text = currentCell.name
         cell.imageOutlet.downloadedFrom(link: currentCell.imageURLString)
         
         return cell
