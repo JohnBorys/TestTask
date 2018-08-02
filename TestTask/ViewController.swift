@@ -11,21 +11,42 @@ import SafariServices
 
 
 class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, SFSafariViewControllerDelegate {
-    var localNews: [NewsModel] = []
+    
+    var nextPage = 0
+    
+    var localNews: [NewsModel] = [] {
+        didSet {
+            nextPage = localNews.count / 20
+        }
+    }
+    var currentEndpoints: Endpoints? = .topHeadlines
     
     lazy var refresher: UIRefreshControl = {
         let refreshController = UIRefreshControl()
         refreshController.tintColor = UIColor(red: 1.00, green: 0.21, blue: 0.55, alpha: 1.00)
         refreshController.attributedTitle = NSAttributedString(string: "Pull to refresh")
-        refreshController.addTarget(self, action: #selector(requestData), for: .valueChanged)
+        refreshController.addTarget(self, action: #selector(requestNewData), for: .valueChanged)
         return refreshController
     }()
     
-    @IBOutlet weak var tableView: UITableView!
 
+    
+    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var searchBarOutlet: UISearchBar!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
+    
+        let loadMore = UIButton()
+        loadMore.frame.size = CGSize(width: 120, height: 60)
+        
+        loadMore.setTitle("LOAD MORE", for: .normal)
+        loadMore.titleLabel?.textColor = UIColor.black
+        loadMore.backgroundColor = UIColor.lightGray
+        loadMore.addTarget(self, action: #selector(loadMoreNews), for: .touchUpInside)
+        tableView.tableFooterView = loadMore
+        loadMore.center = (tableView.tableFooterView?.center)!
         
         if #available(iOS 10.0, *) {
             tableView.refreshControl = refresher
@@ -35,24 +56,55 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         
         let cellNib = UINib(nibName: "\(NewsTableViewCell.self)", bundle: nil)
         tableView.register(cellNib, forCellReuseIdentifier: "\(NewsTableViewCell.self)")
-        requestData()
+        requestData(endpoint: currentEndpoints ?? Endpoints.topHeadlines)
+        
+        navigationItem.title = currentEndpoints?.getName()
     }
     
-    @objc func requestData() {
-        NetworkDataManager.sharedNetworkDataManager.getAllNews(complition: {news in
+    @objc func loadMoreNews() {
+            NetworkDataManager.sharedNetworkDataManager.getAllNews(endpoint: currentEndpoints ?? Endpoints.topHeadlines, nextPage: nextPage, complition: {news in
+                DispatchQueue.main.async {
+                    for new in news {
+                        self.localNews.append(new)
+                    }
+                    self.tableView.reloadData()
+                }
+                print("Hooray I recive news in view controller \(news.count)")
+            })
+        }
+    
+    @objc func requestNewData() {
+        NetworkDataManager.sharedNetworkDataManager.getAllNews(endpoint: currentEndpoints ?? Endpoints.topHeadlines, nextPage: nextPage, complition: { news in
             DispatchQueue.main.async {
-//                self.localNews = news
-                self.localNews.append(contentsOf: news)
+                for new in news {
+                    if self.localNews.contains(where: { $0.url != new.url }) {
+                        self.localNews.insert(new, at: news.startIndex)
+                    }
+                }
+//                self.localNews += newNews
+//                self.localNews.append(contentsOf: newNews)
+//                newNews.append(contentsOf: self.localNews)
                 self.tableView.reloadData()
-                
+//                newNews = []
             }
-             print("Hooray I recive news in view controller \(news.count)")
+            print("Hooray I recive news in view controller \(news.count)")
         })
         
         let deadline = DispatchTime.now() + .milliseconds(800)
         DispatchQueue.main.asyncAfter(deadline: deadline) {
             self.refresher.endRefreshing()
         }
+    }
+    
+    func requestData(endpoint: Endpoints) {
+        NetworkDataManager.sharedNetworkDataManager.getAllNews(endpoint: currentEndpoints ?? Endpoints.topHeadlines, nextPage: nextPage, complition: {news in
+            DispatchQueue.main.async {
+                self.localNews = []
+                self.localNews = news
+                self.tableView.reloadData()
+            }
+            print("Hooray I recive news in view controller \(news.count)")
+        })
     }
     
     
@@ -69,12 +121,15 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "\(NewsTableViewCell.self)") as! NewsTableViewCell
-        let currentCell = localNews[indexPath.row]
-        cell.titleLabel.text = currentCell.title
-        cell.descripton.text = currentCell.description
-        cell.authorLabel.text = currentCell.author
-        cell.sourceOrtlet.text = currentCell.name
-        cell.imageOutlet.downloadedFrom(link: currentCell.imageURLString)
+        cell.selectionStyle = .none
+        
+        let currentNew = localNews[indexPath.row]
+        cell.titleLabel.text = currentNew.title
+        cell.descripton.text = currentNew.description
+        cell.authorLabel.text = currentNew.author
+        cell.nameOrtlet.text = currentNew.name
+        cell.imageOutlet.downloadedFrom(link: currentNew.imageURLString)
+        
         
         return cell
     }
@@ -85,7 +140,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         webVC.delegate = self
         self.present(webVC, animated: true, completion: nil)
     }
-   
+    
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let currentNew = localNews[indexPath.row]
@@ -93,7 +148,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         self.showWebsite(url: url)
     }
     
-    
+
 }
 
 extension UIImageView {
@@ -117,19 +172,15 @@ extension UIImageView {
     }
 }
 
-//extension UIImageView {
-//
-//    func downloadedFrom(link:String) {
-//        guard let url = URL(string: link) else { return }
-//        URLSession.shared.dataTask(with: url, completionHandler: { (data, _, error) -> Void in
-//            guard let data = data , error == nil, let image = UIImage(data: data) else { return }
-//            DispatchQueue.main.async { () -> Void in
-//                self.image = image
-//            }
-//        }).resume()
-//    }
-//}
-
-
+extension ViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        if let text = searchBar.text, text.count > 0 {
+            searchingPhrase = text
+            currentEndpoints = .everything
+            requestData(endpoint: .everything)
+            searchBar.resignFirstResponder()
+        }
+    }
+}
 
 

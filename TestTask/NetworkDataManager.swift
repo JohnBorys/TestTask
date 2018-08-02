@@ -10,14 +10,15 @@ import UIKit
 
 class NetworkDataManager {
     static let sharedNetworkDataManager = NetworkDataManager()
-    let apaKey = "e6b65ba5499f4b1f8817d582038435a6"
-    let country = "us"
+    let apiKey = "e6b65ba5499f4b1f8817d582038435a6"
+    var country = ""
     
-    func getAllNews(complition: @escaping (_ recipes: [NewsModel])->()) {
+    
+    func getAllNews(endpoint: Endpoints, nextPage: Int, complition: @escaping (_ recipes: [NewsModel])->()) {
         // 1 URL
         var stringURL = "https://newsapi.org/v2/top-headlines"
         //        stringURL = stringURL + "?" + country + "&" + "apiKey=\(apaKey)"
-        stringURL = "https://newsapi.org/v2/everything?q=bitcoin&" + "sortBy=popularity&" + "apiKey=e6b65ba5499f4b1f8817d582038435a6"
+        stringURL = "https://newsapi.org" + endpoint.getString() + "page=\(nextPage)&" + "apiKey=\(apiKey)"
         guard let url = URL(string: stringURL) else {
             return
         }
@@ -45,38 +46,54 @@ class NetworkDataManager {
                     return
                 }
                 var recipesModelsArray: [NewsModel] = []
-                for newsDictionary in reseepsDictionariesArray {
+                for newItem in reseepsDictionariesArray {
                     let newsModel = NewsModel()
-
-                    if let title = newsDictionary["title"] as? String {
+                    
+                    if let title = newItem["title"] as? String {
                         newsModel.title = title
                     }
-                    if let description = newsDictionary["description"] as? String {
+                    
+                    if let description = newItem["description"] as? String {
                         newsModel.description = description
                     }
-                    if let author = newsDictionary["author"] as? String {
+                    
+                    if let author = newItem["author"] as? String {
                         newsModel.author = author
                     }
-                    if let name = newsDictionary["name"] as? String {
-                        newsModel.name = name
+                    
+//                    if let source = encodedData["source"] as? [String: Any] {
+//                        if let name = source["name"] {
+//                            print(name)
+//                        }
+//                    }
+                    
+                    if let source = newItem["source"] as? [String : Any] {
+                        newsModel.name = source["name"] as! String
+//                        for item in source {
+//                            print(item.values.count)
+//                            if let name = item["name"] as? String {
+//                                newsModel.name = name
+//                            }
+//                        }
                     }
-                    if let image = newsDictionary["urlToImage"] as? String {
+                    
+                    if let image = newItem["urlToImage"] as? String {
                         newsModel.imageURLString = image
                     }
-                    if let url = newsDictionary["url"] as? String {
+                    
+                    if let url = newItem["url"] as? String {
                         newsModel.url = url
                     }
                     
-                    
                     recipesModelsArray.append(newsModel)
                 }
-                print("recived response frome server")
-                complition(recipesModelsArray)
                 
+                complition(recipesModelsArray)
             }
         }
         
         task.resume()
         
     }
+    
 }

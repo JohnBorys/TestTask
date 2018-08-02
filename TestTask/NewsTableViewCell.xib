@@ -20,24 +20,27 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="YCo-ft-NmJ">
-                        <rect key="frame" x="14" y="86" width="322" height="14.5"/>
+                        <rect key="frame" x="14" y="86.5" width="322" height="14.5"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="author" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8cs-Y5-2yU">
-                                <rect key="frame" x="0.0" y="0.0" width="37" height="14.5"/>
+                                <rect key="frame" x="0.0" y="0.0" width="161" height="14.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="source" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iE4-Px-MFe">
-                                <rect key="frame" x="37" y="0.0" width="285" height="14.5"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iE4-Px-MFe">
+                                <rect key="frame" x="161" y="0.0" width="161" height="14.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
+                        <constraints>
+                            <constraint firstItem="iE4-Px-MFe" firstAttribute="width" secondItem="8cs-Y5-2yU" secondAttribute="width" id="pYw-MQ-GDr"/>
+                        </constraints>
                     </stackView>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="title" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hJ6-Cj-Hue">
-                        <rect key="frame" x="14" y="17" width="322" height="36"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" text="title" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hJ6-Cj-Hue">
+                        <rect key="frame" x="14" y="17" width="322" height="36.5"/>
                         <fontDescription key="fontDescription" type="system" pointSize="30"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
@@ -49,7 +52,7 @@
                         </constraints>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="description" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="G2N-Ud-UUa">
-                        <rect key="frame" x="14" y="57" width="324" height="19.5"/>
+                        <rect key="frame" x="14" y="57.5" width="324" height="19.5"/>
                         <fontDescription key="fontDescription" type="system" weight="light" pointSize="16"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
@@ -76,10 +79,10 @@
                 <outlet property="authorLabel" destination="8cs-Y5-2yU" id="koz-Gg-3rj"/>
                 <outlet property="descripton" destination="G2N-Ud-UUa" id="r9n-8X-aW4"/>
                 <outlet property="imageOutlet" destination="c4K-Ze-Vil" id="c9A-NE-65f"/>
-                <outlet property="sourceOrtlet" destination="iE4-Px-MFe" id="i3T-Nc-piH"/>
+                <outlet property="nameOrtlet" destination="iE4-Px-MFe" id="i3T-Nc-piH"/>
                 <outlet property="titleLabel" destination="hJ6-Cj-Hue" id="7T7-yw-u6Z"/>
             </connections>
-            <point key="canvasLocation" x="81" y="193.5"/>
+            <point key="canvasLocation" x="48" y="144"/>
         </tableViewCell>
     </objects>
 </document>
