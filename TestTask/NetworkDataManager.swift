@@ -8,23 +8,35 @@
 
 import UIKit
 
+
 class NetworkDataManager {
     static let sharedNetworkDataManager = NetworkDataManager()
     let apiKey = "e6b65ba5499f4b1f8817d582038435a6"
     
     
-    func getAllNews(nextPage: Int?, country: String? = nil, category: String? = nil, complition: @escaping (_ recipes: [NewsModel])->()) {
+    func getAllNews(searchingPhrase: String, nextPage: Int?, country: String? = nil, category: String? = nil, source: String?, complition: @escaping (_ recipes: [NewsModel])->()) {
         var stringURL = "https://newsapi.org/v2/top-headlines"
         var categoryString = ""
         var countryString = ""
+        var searchString = ""
+        var sourceString = ""
         if let category = category {
             categoryString = "category=\(category)&"
         }
         if let country = country {
             countryString = "country=\(country)&"
         }
+        if searchingPhrase.count > 0 {
+            searchString = "q=\(searchingPhrase)&"
+        }
         
-        stringURL = "https://newsapi.org" + "/v2/top-headlines?" + "page=\(nextPage)&" + countryString + categoryString + "apiKey=\(apiKey)"
+        if let _source = source {
+            sourceString = "sources=\(_source)&"
+        }
+        
+        stringURL = "https://newsapi.org" + "/v2/top-headlines?"
+            + "page=\(nextPage)&" + countryString + categoryString + searchString
+            + sourceString + "apiKey=\(apiKey)"
         guard let url = URL(string: stringURL) else {
             return
         }
@@ -65,20 +77,8 @@ class NetworkDataManager {
                         newsModel.author = author
                     }
                     
-//                    if let source = encodedData["source"] as? [String: Any] {
-//                        if let name = source["name"] {
-//                            print(name)
-//                        }
-//                    }
-                    
                     if let source = newItem["source"] as? [String : Any] {
                         newsModel.name = source["name"] as! String
-//                        for item in source {
-//                            print(item.values.count)
-//                            if let name = item["name"] as? String {
-//                                newsModel.name = name
-//                            }
-//                        }
                     }
                     
                     if let image = newItem["urlToImage"] as? String {
