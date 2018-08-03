@@ -64,7 +64,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="C8G-k2-Sxc">
-                                <rect key="frame" x="0.0" y="76" width="375" height="591"/>
+                                <rect key="frame" x="0.0" y="176" width="375" height="491"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="newsCell" textLabel="s83-w0-EsF" detailTextLabel="yrq-uc-ZAR" style="IBUITableViewCellStyleSubtitle" id="VAP-Hd-bib">
@@ -104,14 +104,56 @@
                                     <outlet property="delegate" destination="BYZ-38-t0r" id="ZPh-5V-WFJ"/>
                                 </connections>
                             </searchBar>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8oB-Uq-Rwz">
+                                <rect key="frame" x="0.0" y="76" width="375" height="100"/>
+                                <subviews>
+                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="cW0-DB-8NT">
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="100"/>
+                                        <subviews>
+                                            <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XUF-Om-ZCa">
+                                                <rect key="frame" x="0.0" y="0.0" width="121.5" height="100"/>
+                                                <connections>
+                                                    <outlet property="dataSource" destination="BYZ-38-t0r" id="fCd-Ss-Jc7"/>
+                                                    <outlet property="delegate" destination="BYZ-38-t0r" id="P08-Se-6j0"/>
+                                                </connections>
+                                            </pickerView>
+                                            <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="82O-zG-dIg">
+                                                <rect key="frame" x="126.5" y="0.0" width="122" height="100"/>
+                                                <connections>
+                                                    <outlet property="dataSource" destination="BYZ-38-t0r" id="YTd-xm-GcU"/>
+                                                    <outlet property="delegate" destination="BYZ-38-t0r" id="etl-Fu-pzn"/>
+                                                </connections>
+                                            </pickerView>
+                                            <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="TAR-SA-Vft">
+                                                <rect key="frame" x="253.5" y="0.0" width="121.5" height="100"/>
+                                                <connections>
+                                                    <outlet property="dataSource" destination="BYZ-38-t0r" id="svf-wj-OTT"/>
+                                                    <outlet property="delegate" destination="BYZ-38-t0r" id="0n8-43-0k9"/>
+                                                </connections>
+                                            </pickerView>
+                                        </subviews>
+                                    </stackView>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstItem="cW0-DB-8NT" firstAttribute="centerX" secondItem="8oB-Uq-Rwz" secondAttribute="centerX" id="8Ps-Ec-eGm"/>
+                                    <constraint firstAttribute="height" constant="100" id="BKy-OD-ZGP"/>
+                                    <constraint firstItem="cW0-DB-8NT" firstAttribute="width" secondItem="8oB-Uq-Rwz" secondAttribute="width" id="Haa-VW-uqz"/>
+                                    <constraint firstItem="cW0-DB-8NT" firstAttribute="height" secondItem="8oB-Uq-Rwz" secondAttribute="height" id="THW-y0-uhW"/>
+                                    <constraint firstItem="cW0-DB-8NT" firstAttribute="centerY" secondItem="8oB-Uq-Rwz" secondAttribute="centerY" id="lPg-jX-dyG"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="8oB-Uq-Rwz" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="3Bh-gB-Lv2"/>
                             <constraint firstItem="4EN-E4-9OX" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="3Lm-GB-WiD"/>
                             <constraint firstAttribute="trailing" secondItem="C8G-k2-Sxc" secondAttribute="trailing" id="Dcs-oR-3Ed"/>
                             <constraint firstItem="4EN-E4-9OX" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="LaJ-WZ-G8t"/>
-                            <constraint firstItem="C8G-k2-Sxc" firstAttribute="top" secondItem="4EN-E4-9OX" secondAttribute="bottom" id="b3L-iB-SDg"/>
+                            <constraint firstItem="C8G-k2-Sxc" firstAttribute="top" secondItem="8oB-Uq-Rwz" secondAttribute="bottom" id="Vp3-JY-siB"/>
                             <constraint firstItem="C8G-k2-Sxc" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="h6y-9r-Yqc"/>
+                            <constraint firstItem="8oB-Uq-Rwz" firstAttribute="top" secondItem="4EN-E4-9OX" secondAttribute="bottom" id="jMX-mL-7QC"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="8oB-Uq-Rwz" secondAttribute="trailing" id="lNv-bg-nn1"/>
                             <constraint firstItem="C8G-k2-Sxc" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="lRv-f3-0jA"/>
                             <constraint firstItem="4EN-E4-9OX" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="mLZ-zp-Hcu"/>
                         </constraints>
@@ -119,7 +161,10 @@
                     </view>
                     <navigationItem key="navigationItem" id="Vo8-1j-2EE"/>
                     <connections>
+                        <outlet property="categoryPickerOutlet" destination="XUF-Om-ZCa" id="uRe-Q8-dC4"/>
+                        <outlet property="countryPickerOutlet" destination="82O-zG-dIg" id="cYf-c5-cHy"/>
                         <outlet property="searchBarOutlet" destination="4EN-E4-9OX" id="tOp-XK-U1U"/>
+                        <outlet property="sourcesPicker" destination="TAR-SA-Vft" id="C9r-hR-mOz"/>
                         <outlet property="tableView" destination="C8G-k2-Sxc" id="C6N-gZ-0BV"/>
                     </connections>
                 </viewController>

@@ -11,20 +11,24 @@ import UIKit
 class NetworkDataManager {
     static let sharedNetworkDataManager = NetworkDataManager()
     let apiKey = "e6b65ba5499f4b1f8817d582038435a6"
-    var country = ""
     
     
-    func getAllNews(endpoint: Endpoints, nextPage: Int, complition: @escaping (_ recipes: [NewsModel])->()) {
-        // 1 URL
+    func getAllNews(nextPage: Int?, country: String? = nil, category: String? = nil, complition: @escaping (_ recipes: [NewsModel])->()) {
         var stringURL = "https://newsapi.org/v2/top-headlines"
-        //        stringURL = stringURL + "?" + country + "&" + "apiKey=\(apaKey)"
-        stringURL = "https://newsapi.org" + endpoint.getString() + "page=\(nextPage)&" + "apiKey=\(apiKey)"
+        var categoryString = ""
+        var countryString = ""
+        if let category = category {
+            categoryString = "category=\(category)&"
+        }
+        if let country = country {
+            countryString = "country=\(country)&"
+        }
+        
+        stringURL = "https://newsapi.org" + "/v2/top-headlines?" + "page=\(nextPage)&" + countryString + categoryString + "apiKey=\(apiKey)"
         guard let url = URL(string: stringURL) else {
             return
         }
-        
         var request = URLRequest(url: url)
-        // 2 HTTP method
         request.httpMethod = "GET"
         
         

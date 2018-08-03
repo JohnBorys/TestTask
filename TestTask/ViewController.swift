@@ -12,14 +12,33 @@ import SafariServices
 
 class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, SFSafariViewControllerDelegate {
     
+    @IBOutlet weak var sourcesPicker: UIPickerView!
+    @IBOutlet weak var categoryPickerOutlet: UIPickerView!
+    @IBOutlet weak var countryPickerOutlet: UIPickerView!
+    
+    var categoriesArray = ["general", "business", "entertainment", "health"]
+    var countriesArray = ["us", "ae", "it", "ve", "ua", "ru"]
+    var sourcesArray = [""]
+    var chosenCountry = ""
+    var chosenCategory = ""
     var nextPage = 0
     
     var localNews: [NewsModel] = [] {
         didSet {
             nextPage = localNews.count / 20
+            if localNews.count != 0 {
+                let loadMore = UIButton()
+                loadMore.frame.size = CGSize(width: 120, height: 60)
+                loadMore.setTitle("LOAD MORE", for: .normal)
+                loadMore.titleLabel?.textColor = UIColor.black
+                loadMore.backgroundColor = UIColor.lightGray
+                loadMore.addTarget(self, action: #selector(loadMoreNews), for: .touchUpInside)
+                tableView.tableFooterView = loadMore
+                loadMore.center = (tableView.tableFooterView?.center)!
+            }
+        
         }
     }
-    var currentEndpoints: Endpoints? = .topHeadlines
     
     lazy var refresher: UIRefreshControl = {
         let refreshController = UIRefreshControl()
@@ -29,7 +48,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         return refreshController
     }()
     
-
+    
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBarOutlet: UISearchBar!
@@ -37,16 +56,6 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     override func viewDidLoad() {
         super.viewDidLoad()
-    
-        let loadMore = UIButton()
-        loadMore.frame.size = CGSize(width: 120, height: 60)
-        
-        loadMore.setTitle("LOAD MORE", for: .normal)
-        loadMore.titleLabel?.textColor = UIColor.black
-        loadMore.backgroundColor = UIColor.lightGray
-        loadMore.addTarget(self, action: #selector(loadMoreNews), for: .touchUpInside)
-        tableView.tableFooterView = loadMore
-        loadMore.center = (tableView.tableFooterView?.center)!
         
         if #available(iOS 10.0, *) {
             tableView.refreshControl = refresher
@@ -56,36 +65,39 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         
         let cellNib = UINib(nibName: "\(NewsTableViewCell.self)", bundle: nil)
         tableView.register(cellNib, forCellReuseIdentifier: "\(NewsTableViewCell.self)")
-        requestData(endpoint: currentEndpoints ?? Endpoints.topHeadlines)
         
-        navigationItem.title = currentEndpoints?.getName()
+        categoryPickerOutlet.selectRow(0, inComponent: 0, animated: false)
+        countryPickerOutlet.selectRow(0, inComponent: 0, animated: false)
+//        requestData()
+        requestNews(withCountry: "us", andCategory: "general")
     }
     
     @objc func loadMoreNews() {
-            NetworkDataManager.sharedNetworkDataManager.getAllNews(endpoint: currentEndpoints ?? Endpoints.topHeadlines, nextPage: nextPage, complition: {news in
-                DispatchQueue.main.async {
-                    for new in news {
-                        self.localNews.append(new)
-                    }
-                    self.tableView.reloadData()
-                }
-                print("Hooray I recive news in view controller \(news.count)")
-            })
-        }
-    
-    @objc func requestNewData() {
-        NetworkDataManager.sharedNetworkDataManager.getAllNews(endpoint: currentEndpoints ?? Endpoints.topHeadlines, nextPage: nextPage, complition: { news in
+        NetworkDataManager.sharedNetworkDataManager.getAllNews(nextPage: nextPage, country: chosenCountry, category: chosenCategory, complition: { news in
             DispatchQueue.main.async {
                 for new in news {
-                    if self.localNews.contains(where: { $0.url != new.url }) {
-                        self.localNews.insert(new, at: news.startIndex)
+                    self.localNews.insert(new, at: self.localNews.endIndex)
+                }
+                self.tableView.reloadData()
+            }
+            print("Hooray I recive news in view controller \(news.count)")
+        })
+    }
+    
+    @objc func requestNewData() {
+        NetworkDataManager.sharedNetworkDataManager.getAllNews(nextPage: nextPage, country: chosenCountry, category: chosenCategory, complition: { news in
+            DispatchQueue.main.async { [weak self] in
+                guard let weakSelf = self else {return}
+                for new in news {
+                    if weakSelf.localNews.contains(where: { $0.url != new.url }) {
+                        weakSelf.localNews.insert(new, at: news.startIndex)
                     }
                 }
-//                self.localNews += newNews
-//                self.localNews.append(contentsOf: newNews)
-//                newNews.append(contentsOf: self.localNews)
-                self.tableView.reloadData()
-//                newNews = []
+                //                self.localNews += newNews
+                //                self.localNews.append(contentsOf: newNews)
+                //                newNews.append(contentsOf: self.localNews)
+                weakSelf.tableView.reloadData()
+                //                newNews = []
             }
             print("Hooray I recive news in view controller \(news.count)")
         })
@@ -96,14 +108,13 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         }
     }
     
-    func requestData(endpoint: Endpoints) {
-        NetworkDataManager.sharedNetworkDataManager.getAllNews(endpoint: currentEndpoints ?? Endpoints.topHeadlines, nextPage: nextPage, complition: {news in
+    @objc func requestData() {
+        NetworkDataManager.sharedNetworkDataManager.getAllNews(nextPage: nextPage, country: chosenCountry, category: chosenCategory, complition: {news in
             DispatchQueue.main.async {
                 self.localNews = []
                 self.localNews = news
                 self.tableView.reloadData()
             }
-            print("Hooray I recive news in view controller \(news.count)")
         })
     }
     
@@ -128,6 +139,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         cell.descripton.text = currentNew.description
         cell.authorLabel.text = currentNew.author
         cell.nameOrtlet.text = currentNew.name
+        cell.imageOutlet.image = #imageLiteral(resourceName: "defaultImage")
         cell.imageOutlet.downloadedFrom(link: currentNew.imageURLString)
         
         
@@ -148,7 +160,17 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         self.showWebsite(url: url)
     }
     
-
+    func requestNews(withCountry country: String, andCategory category: String, source: String? = nil) {
+        NetworkDataManager().getAllNews(nextPage: nil, country: country, category: category) { news in
+            self.localNews.removeAll()
+            DispatchQueue.main.async {
+                for new in news {
+                    self.localNews.append(new)
+                }
+                self.tableView.reloadData()
+            }
+        }
+    }
 }
 
 extension UIImageView {
@@ -176,11 +198,55 @@ extension ViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         if let text = searchBar.text, text.count > 0 {
             searchingPhrase = text
-            currentEndpoints = .everything
-            requestData(endpoint: .everything)
+            requestData()
             searchBar.resignFirstResponder()
         }
     }
+}
+
+extension ViewController: UIPickerViewDelegate, UIPickerViewDataSource {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        switch pickerView {
+        case categoryPickerOutlet:
+            return categoriesArray.count
+        case countryPickerOutlet:
+            return countriesArray.count
+        case sourcesPicker:
+            return sourcesArray.count
+        default:
+            return 0
+        }
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        switch pickerView {
+        case categoryPickerOutlet:
+            return categoriesArray[row]
+        case countryPickerOutlet:
+            return countriesArray[row]
+        case sourcesPicker:
+            return sourcesArray[row]
+        default:
+            return nil
+        }
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        switch pickerView {
+        case categoryPickerOutlet:
+             chosenCategory = categoriesArray[row]
+        case countryPickerOutlet:
+             chosenCountry = countriesArray[row]
+        default:
+            break
+        }
+        requestNews(withCountry: chosenCountry, andCategory: chosenCategory)
+    }
+    
 }
 
 
