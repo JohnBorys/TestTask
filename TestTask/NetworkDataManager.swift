@@ -16,27 +16,27 @@ class NetworkDataManager {
     
     func getAllNews(searchingPhrase: String, nextPage: Int?, country: String? = nil, category: String? = nil, source: String?, complition: @escaping (_ recipes: [NewsModel])->()) {
         var stringURL = "https://newsapi.org/v2/top-headlines"
-        var categoryString = ""
-        var countryString = ""
-        var searchString = ""
-        var sourceString = ""
+        var categoryForRequest = ""
+        var countryForRequest = ""
+        var searchForRequest = ""
+        var sourceForRequest = ""
         if let category = category {
-            categoryString = "category=\(category)&"
+            categoryForRequest = "category=\(category)&"
         }
         if let country = country {
-            countryString = "country=\(country)&"
+            countryForRequest = "country=\(country)&"
         }
         if searchingPhrase.count > 0 {
-            searchString = "q=\(searchingPhrase)&"
+            searchForRequest = "q=\(searchingPhrase)&"
         }
         
-        if let _source = source {
-            sourceString = "sources=\(_source)&"
+        if let source = source {
+            sourceForRequest = "sources=\(source)&"
         }
         
         stringURL = "https://newsapi.org" + "/v2/top-headlines?"
-            + "page=\(nextPage)&" + countryString + categoryString + searchString
-            + sourceString + "apiKey=\(apiKey)"
+            + "page=\(nextPage ?? 0)&" + countryForRequest + categoryForRequest + searchForRequest
+            + sourceForRequest + "apiKey=\(apiKey)"
         guard let url = URL(string: stringURL) else {
             return
         }
